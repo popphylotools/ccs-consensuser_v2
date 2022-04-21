@@ -1,0 +1,12 @@
+name: ccs-consensuser
+channels:
+- bioconda
+- conda-forge
+dependencies:
+- biopython=1.72
+- mafft=7.475
+- clustalw=2.1
+- blast=2.5
+- muscle=3.8.1551
+- mothur=1.46.1
+- numpy=1.18.5
