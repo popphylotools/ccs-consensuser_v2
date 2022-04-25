@@ -1,5 +1,5 @@
 
-<p align="right">
+<p align="left">
 <img src="https://github.com/popphylotools/ccs-consensuser_v2/blob/main/ccs-consensuser_logo.jpg" width="700" />
 </p>
 
