@@ -92,8 +92,10 @@ MODE CONSENSUS_BATCH:
 -----
 The consensus batch mode is similar to consensus mode, but it performs this task in a parallel way. The user should prepare a file containing the primers, path of the PacBio Hifi fastq files and path of the output directory. The information of each sample is added in separate lines in a file named as input_list. An example of the input_list file is displayed below:
 
+```sh
 primer  GCAGTCGAACATGTAGCTGACTCAGGTCACACACGCCATTTTACTATTAAAACGG TGGATCACTTGTGCAAGCATCACATCGTAGGCTTTCATTCCCTGCCATGG     test_data/mode_consensus_batch/PB_o5503_129-904/B_tau_Laos_330/nuclear_loci_example_oriented.B_tau_Laos_330.PB_o5503_129-904.fastq     test_data/mode_consensus_batch/PB_o5503_129-904/B_tau_Laos_330
 primer  GCAGTCGAACATGTAGCTGACTCAGGTCACACACGCCATTTTACTATTAAAACGG TGGATCACTTGTGCAAGCATCACATCGTAGGCTTTCATTCCCTGCCATGG     test_data/mode_consensus_batch/PB_o5503_129-904/B_tau_Thailand_354.1/nuclear_loci_example_oriented.B_tau_Thailand_354.1.PB_o5503_129-904.fastq test_data/mode_consensus_batch/PB_o5503_129-904/B_tau_Thailand_354.1
+```
 
 A general command line is shown below:
 
