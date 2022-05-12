@@ -23,11 +23,13 @@ We developed and tested this script using Python version 3. It requires numpy an
 * muscle v.3.8.1551 (http://www.drive5.com/muscle/)
 * clustalw v.2.1 (http://www.clustal.org/clustal2/)
 
-We strongly recomend to use conda (https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) to install the dependecies of this program. If the use has already installed conda, run the following commands:
+We strongly recommend to use conda (https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) to install the dependecies of this program. Once conda is installed in the system, run the following commands to install CCS-consensuser:
 
+```sh
 git clone https://github.com/popphylotools/ccs-consensuser_v2.git
 cd 
 conda env create -f environment.yml
+```
 
 USAGE:
 -----
