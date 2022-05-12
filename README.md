@@ -34,7 +34,7 @@ conda env create -f environment.yml
 USAGE:
 -----
 
-Uncompress the test data to test the program:
+Uncompress the test_data.tar.gz to test the program:
 
 ```sh
 tar -xzvf test_data.tar.gz
