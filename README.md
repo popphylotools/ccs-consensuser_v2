@@ -29,7 +29,7 @@ git clone https://github.com/popphylotools/ccs-consensuser_v2.git
 cd 
 #Linux OS (mothur v.1.46.1)
 conda env create -f environment linuxOS.yml
-#macOS. mothur v.1.46.1 is not available in conda for macOS, mothur 1.44.11 is installed instead.
+#macOS. mothur v.1.46.1 is not available in conda for macOS. mothur 1.44.11 will be installed instead.
 conda env create -f environment_macOS.yml
 ```
 
