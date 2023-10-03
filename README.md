@@ -133,7 +133,7 @@ OPTIONS:
 -----
 
 <p align="center">
-<img src="https://github.com/popphylotools/ccs-consensuser_v2/blob/main/ccs-consensuser_v2_options.jpg" width="700" />
+<img src="https://github.com/popphylotools/ccs-consensuser_v2/blob/main/ccs-consensuser_v2_options.jpg" width="800" />
 </p>
 
 Credits:
