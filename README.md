@@ -130,6 +130,7 @@ OUTPUT:
 
 The output files are organized in directories, one per sample and one referenced to as final_consensus_sequences. When multiple markers are used (primer pairs), the program generates one directory per marker. Example of the output tree structure:
 
+```sh
 Output_directory/
 ├─ marker1/
 │  ├─ final_consensus_sequences
@@ -144,6 +145,7 @@ Output_directory/
 ├─ input_prefix_oriented.group (Output of mothur. Contain the information of the demuliplex step)
 ├─ input_prefix_oriented.scrap.fastq (Output of mothur. Contain the information of the demuliplex step)
 ├─ mothur.1.logfile (Output of mothur. Log file)
+```
 
 Content of the final_consensus_sequences directory:
 - consensus_sequences.fasta - This file includes all the consensus sequences.
