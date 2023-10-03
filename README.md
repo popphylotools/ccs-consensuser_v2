@@ -162,6 +162,13 @@ OPTIONS:
 
 
 
+Credits:
+-----
+[Carlos Congrains](https://github.com/carloscongrains): Contributor  
+[Forest Bremer](https://github.com/fbremer): Legacy contributor  
+[Julian Dupuis](https://github.com/jrdupuis): Contributor  
+[Scott Geib](https://github.com/scottgeib): Contributor  
+
 Citation:
 -----
 Congrains et al 2023.
