@@ -141,7 +141,7 @@ Output_directory/
 │  ├─ sample01
 │  ├─ sample02
 ├─ primers.fasta
-├─ input_prefix_oriented.fastq (Input of mothur. Contain the oriented reads in fastq format, used as input for mother.)
+├─ input_prefix_oriented.fastq (Input of mothur. Contain the reads oriented on the same direction.)
 ├─ input_prefix_oriented.group (Output of mothur. Contain the information of the demuliplex step)
 ├─ input_prefix_oriented.scrap.fastq (Output of mothur. Contain the information of the demuliplex step)
 ├─ mothur.1.logfile (Output of mothur. Log file)
@@ -150,7 +150,7 @@ Output_directory/
 Content of the final_consensus_sequences directory:
 - consensus_sequences.fasta - This file includes all the consensus sequences.
 
-Content of the directory of one sample. The hypothetical example describes the directory of the sample human_180:
+Content of the sample directory. The hypothetical example describes the directory of the sample human_180:
 - human_180.2.consensus.fasta - Prefix has the form SampleID, "." and number of consensus sequences.
 - human_180.2.consensus.aln.fasta - When more than one sequence the program aligns the sequences of the human_180.2.consensus.fasta.
 - human_HLA_CCS_rq_099_new_header_oriented.human_180_1.13.consensus.fasta - Independent file for a consensus sequence. Prefix has the form: name of the input file, ".", sampleID (human_180), "_", haplotypeID (1), "." and the coverage (13).
@@ -164,6 +164,6 @@ OPTIONS:
 
 Citation:
 -----
-Congrains et al 2022.
+Congrains et al 2023.
 
 This script is in the public domain in the United States per 17 U.S.C. § 105
