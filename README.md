@@ -4,7 +4,7 @@
 </p>
 
 
-###################################
+######################################
 
 CCS-consensuser is a pipeline written in Python 3 that aims to generate consensus of unique sequences (haplotypes) from long-read amplicon sequences obtained by PacBio circular consensus sequencing (CCS). This tool is implemented in two main steps, demultiplexing and consensus.
 
