@@ -46,7 +46,7 @@ This mode implements the reorientation of the reads and demultiplexing. A genera
 
 python ccs-consensuser_v2.py --number_processors 10 --mode demultiplex -oligos path_to_oligos_file -i path_to_hifi_reads.fastq -o path_to_output_directory
 
-To test this mode, run the following command line in the place you download this program:
+To test this mode, run the following command line in the location you downloaded the program and extracted the test_data.tar.gz:
 
 ```sh
 python ccs-consensuser_v2.py --number_processors 10 --mode demultiplex -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_demultiplex_output 2> mode_demultiplex_output.log
@@ -65,27 +65,29 @@ MODE CONSENSUS:
 
 This mode aims to obtain a consensus from reads in fastq format from a demultiplexed sample. A general command line is shown below:
 
-python ccs-consensuser_v2.py --mode consensus -l mafft -F sequence_primerF -R sequence_primerR --out_dir path_to_output_directory  -i path_to_hifi_reads.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel F 2> path_to_output_log
+python ccs-consensuser_v2.py --mode consensus -l mafft -F sequence_primerF -R sequence_primerR --out_dir path_to_output_directory  -i path_to_hifi_reads.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
 
 To test this mode, run the following command line in the place you downloaded this program:
 
 ```sh
-python ccs-consensuser_v2.py --mode consensus -l mafft -F GCAGTCGAACATGTAGCTGACTCAGGTCACGGGATGGATGTATGTCTGCTG -R TGGATCACTTGTGCAAGCATCACATCGTAGCAAATACCAAAACCCCATAGCCAT --out_dir mode_consensus_output -i  test_data/mode_consensus/B_tau_Laos_330.PB_o5188_853-1541.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel F 2> mode_consensus_output.log
+python ccs-consensuser_v2.py --mode consensus -l mafft -F GCAGTCGAACATGTAGCTGACTCAGGTCACGGGATGGATGTATGTCTGCTG -R TGGATCACTTGTGCAAGCATCACATCGTAGCAAATACCAAAACCCCATAGCCAT --out_dir mode_consensus_output -i  test_data/mode_consensus/B_tau_Laos_330.PB_o5188_853-1541.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_consensus_output.log
 ```
 
-The output consists in a set of fasta files and a zip file (--clean_up zip). For instance, the script will generate the following files after running the command line indicated above:
+The output consists of a set of fasta files and a zip file (--clean_up zip). For instance, the script will generate the following files after running the command line indicated above:
 
-B_tau_Laos_330.PB_o5188_853-1541_1.3.consensus.fasta
-B_tau_Laos_330.PB_o5188_853-1541_18.2.consensus.fasta
+```sh
+B_tau_Laos_330.PB_o5188_853-1541_1.4.consensus.fasta
+B_tau_Laos_330.PB_o5188_853-1541_17.2.consensus.fasta
 B_tau_Laos_330.PB_o5188_853-1541_7.6.consensus.fasta
 mode_consensus_output.1.minor_freq_hap.consensus.fasta
 mode_consensus_output.2.consensus.fasta
 mode_consensus_output.2.consensus.aln.fasta
 mode_consensus_output_intermediate_files.zip
+```
 
-The three first files are the consensus of each haplotype found in the sample. The filenames inform the sample name (B_tau_Laos_330), marker name (PB_o5188_853-1541) and coverage (3,2 and 6).
-The fourth file contains the haplotype(s) that did not pass the filter --min_prop_reads, which in this case was 0.2. The file name inficates the number of haplotypes in this file, which was only 1 (B_tau_Laos_330.PB_o5188_853-1541_18.2.consensus.fasta).
-The mode_consensus_output.2.consensus.fasta is the final result containing the sequences of the haplotypes found in this sample.
+The three first files are the consensus of each haplotype found in the sample. The filenames inform the sample name (B_tau_Laos_330), marker name (PB_o5188_853-1541) and coverage, which for this example are 3, 2 and 6, respectively.
+The fourth file contains the haplotype(s) that did not pass the filter --min_prop_reads, which in this case was set to 0.2. The file name indicates the number of haplotypes included, which was only 1 (B_tau_Laos_330.PB_o5188_853-1541_18.2.consensus.fasta).
+The mode_consensus_output.2.consensus.fasta is the final result for this sample and contains the sequences of the haplotypes in fasta format.
 In case of more than one haplotype, the program also produces an alignment, stored in mode_consensus_output.2.consensus.aln.fasta.
 The zip file include all the intermediate files created for this analysis. If the user does not require these files use --clean_up remove or if the user would like to check those files use --clean_up keep.
 
@@ -100,12 +102,12 @@ primer  GCAGTCGAACATGTAGCTGACTCAGGTCACACACGCCATTTTACTATTAAAACGG TGGATCACTTGTGCAA
 
 A general command line is shown below:
 
-python ccs-consensuser_v2.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list path_to_input_list -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel F 2> path_to_output_log
+python ccs-consensuser_v2.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list path_to_input_list -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
 
 To test this mode, run the following command line in the place you downloaded this program:
 
 ```sh
-python ccs-consensuser_v2.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list test_data/mode_consensus_batch/consensus_batch_input -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel F 2> consensus_batch_output.log
+python ccs-consensuser_v2.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list test_data/mode_consensus_batch/consensus_batch_input -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> consensus_batch_output.log
 ```
 
 The output of each sample will be stored in the directory provided in the fifth field of the input_list file. For more information about the output see MODE CONSENSUS output above.
@@ -114,15 +116,15 @@ MODE ALL:
 -----
 This mode runs the complete pipeline, which is reorientation of the reads, demultiplexing and obtain the consensus of each sample. A general command line is shown below:
 
-python ccs-consensuser_v2.py --number_processors 10 --mode all -l mafft -i path_to_hifi_reads.fastq -oligos path_to_oligos_file -o path_to_output_directory -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel F 2> path_to_output_log
+python ccs-consensuser_v2.py --number_processors 10 --mode all -l mafft -i path_to_hifi_reads.fastq -oligos path_to_oligos_file -o path_to_output_directory -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
 
 To test this mode, run the following command line in the place you downloaded this program:
 
 ```sh
-python ccs-consensuser_v2.py --number_processors 10 --mode all -l mafft -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_all_output -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel F 2> mode_all_output.log
+python ccs-consensuser_v2.py --number_processors 10 --mode all -l mafft -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_all_output -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_all_output.log
 ```
 
-This mode will make a directory for each locus contining one directory per sample. For more information about the output see MODE CONSENSUS output above.
+This mode will make a directory for each locus containing one directory per sample. For more information about the output see MODE CONSENSUS output above.
 
 OUTPUT:
 -----
