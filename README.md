@@ -27,7 +27,10 @@ We strongly recommend to use conda (https://docs.conda.io/projects/conda/en/late
 ```sh
 git clone https://github.com/popphylotools/ccs-consensuser_v2.git
 cd 
-conda env create -f environment.yml
+#Linux OS (mothur v.1.46.1)
+conda env create -f environment linuxOS.yml
+#macOS. mothur v.1.46.1 is not available in conda for macOS, mothur 1.44.11 is installed instead.
+conda env create -f environment_macOS.yml
 ```
 
 USAGE:
@@ -124,39 +127,7 @@ To test this mode, run the following command line in the place you downloaded th
 python ccs-consensuser_v2.py --number_processors 10 --mode all -l mafft -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_all_output -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_all_output.log
 ```
 
-This mode will make a directory for each locus containing one directory per sample. For more information about the output see MODE CONSENSUS output above.
-
-OUTPUT:
------
-
-The output files are organized in directories, one per sample and one referenced to as final_consensus_sequences. When multiple markers are used (primer pairs), the program generates one directory per marker. Example of the output tree structure:
-
-```sh
-Output_directory/
-├─ marker1/
-│  ├─ final_consensus_sequences
-│  ├─ sample01
-│  ├─ sample02
-├─ marker2/
-│  ├─ final_consensus_sequences
-│  ├─ sample01
-│  ├─ sample02
-├─ primers.fasta
-├─ input_prefix_oriented.fastq (Input of mothur. Contain the reads oriented on the same direction.)
-├─ input_prefix_oriented.group (Output of mothur. Contain the information of the demuliplex step)
-├─ input_prefix_oriented.scrap.fastq (Output of mothur. Contain the information of the demuliplex step)
-├─ mothur.1.logfile (Output of mothur. Log file)
-```
-
-Content of the final_consensus_sequences directory:
-- consensus_sequences.fasta - This file includes all the consensus sequences.
-
-Content of the sample directory. The hypothetical example describes the directory of the sample human_180:
-- human_180.2.consensus.fasta - Prefix has the form SampleID, "." and number of consensus sequences.
-- human_180.2.consensus.aln.fasta - When more than one sequence the program aligns the sequences of the human_180.2.consensus.fasta.
-- human_HLA_CCS_rq_099_new_header_oriented.human_180_1.13.consensus.fasta - Independent file for a consensus sequence. Prefix has the form: name of the input file, ".", sampleID (human_180), "_", haplotypeID (1), "." and the coverage (13).
-- human_HLA_CCS_rq_099_new_header_oriented.human_180_2.32.consensus.fasta - Independent file for a consensus sequence. Prefix has the form: name of the input file, ".", sampleID (human_180), "_", haplotypeID (2), "." and the coverage (32).
-- human_180_intermediate_files.zip - A zip compressed file with all the intermediate files.
+This mode will make a directory for each locus containing one directory per sample. For more information about the output see MODE CONSENSUS output above. In adition, the program generates a file with all consensus sequences per marker to facilitate further analysis. This file is located at final_consensus_sequences/consensus_sequences.fasta.
 
 OPTIONS:
 -----
