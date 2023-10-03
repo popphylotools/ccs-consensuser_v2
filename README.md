@@ -125,6 +125,40 @@ python ccs-consensuser_v2.py --number_processors 10 --mode all -l mafft -i test_
 
 This mode will make a directory for each locus contining one directory per sample. For more information about the output see MODE CONSENSUS output above.
 
+OUTPUT:
+-----
+
+The output files are organized in directories, one per sample and one referenced to as final_consensus_sequences. When multiple markers are used (primer pairs), the program generates one directory per marker. Example of the output tree structure:
+
+Output_directory/
+├─ marker1/
+│  ├─ final_consensus_sequences
+│  ├─ sample01
+│  ├─ sample02
+├─ marker2/
+│  ├─ final_consensus_sequences
+│  ├─ sample01
+│  ├─ sample02
+├─ primers.fasta
+├─ input_prefix_oriented.fastq (Input of mothur. Contain the oriented reads in fastq format, used as input for mother.)
+├─ input_prefix_oriented.group (Output of mothur. Contain the information of the demuliplex step)
+├─ input_prefix_oriented.scrap.fastq (Output of mothur. Contain the information of the demuliplex step)
+├─ mothur.1.logfile (Output of mothur. Log file)
+
+Content of the final_consensus_sequences directory:
+- consensus_sequences.fasta - This file includes all the consensus sequences.
+
+Content of the directory of one sample. The hypothetical example describes the directory of the sample human_180:
+- human_180.2.consensus.fasta - Prefix has the form SampleID, "." and number of consensus sequences.
+- human_180.2.consensus.aln.fasta - When more than one sequence the program aligns the sequences of the human_180.2.consensus.fasta.
+- human_HLA_CCS_rq_099_new_header_oriented.human_180_1.13.consensus.fasta - Independent file for a consensus sequence. Prefix has the form: name of the input file, ".", sampleID (human_180), "_", haplotypeID (1), "." and the coverage (13).
+- human_HLA_CCS_rq_099_new_header_oriented.human_180_2.32.consensus.fasta - Independent file for a consensus sequence. Prefix has the form: name of the input file, ".", sampleID (human_180), "_", haplotypeID (2), "." and the coverage (32).
+- human_180_intermediate_files.zip - A zip compressed file with all the intermediate files.
+
+OPTIONS:
+-----
+
+
 
 Citation:
 -----
