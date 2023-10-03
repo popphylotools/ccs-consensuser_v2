@@ -26,7 +26,7 @@ We strongly recommend to use conda (https://docs.conda.io/projects/conda/en/late
 
 ```sh
 git clone https://github.com/popphylotools/ccs-consensuser_v2.git
-cd 
+cd ccs-consensuser_v2
 #Linux OS (mothur v.1.46.1)
 conda env create -f environment linuxOS.yml
 #macOS. mothur v.1.46.1 is not available in conda for macOS. mothur 1.44.11 will be installed instead.
