@@ -145,6 +145,6 @@ Credits:
 
 Citation:
 -----
-Congrains et al 2023.
+Congrains et al 2024.
 
 This script is in the public domain in the United States per 17 U.S.C. § 105
