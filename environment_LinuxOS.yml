@@ -1,0 +1,12 @@
+name: ccs-consensuser_v2
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - mothur==1.46.1
+  - biopython=1.83
+  - bioconda::muscle=3.8.1551
+  - bioconda::blast=2.5
+  - bioconda::clustalw=2.1
+  - bioconda::mafft=7.475
