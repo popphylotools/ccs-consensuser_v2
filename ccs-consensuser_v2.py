@@ -24,11 +24,8 @@ import Bio
 import numpy as np
 from Bio import AlignIO
 from Bio import SeqIO
-from Bio import pairwise2
+from Bio.Align import PairwiseAligner
 from Bio.Align import AlignInfo
-from Bio.Align.Applications import ClustalwCommandline
-from Bio.Align.Applications import MuscleCommandline
-from Bio.Alphabet import IUPAC
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
@@ -60,10 +57,10 @@ log = logging.getLogger("ccs-consensuser.py")
 
 # some functions from: https://github.com/chapmanb/bcbb/blob/master/align/adaptor_trim.py
 # _remove_adaptor
-# trim_adaptor
+# trim_adaptor (modified)
 # trim_adaptor_w_qual
 
-#Check the arguments
+#Function to check the arguments
 def check_args(in_file_list,in_file,oligos,aligner,indel,mode,clean_up):
     
     def check_whitespaces(input): 
@@ -200,7 +197,6 @@ def convert_fastq2fasta(input_fastq,output_dir):
 def short_blast(input_fasta,output_dir,number_seq,primer_fasta,number_processors):
     output_blast = os.path.join(output_dir,"blastn_short_primer_vs_input_fasta")
     blast_db = os.path.join(output_dir,"reads_blast_db")
-    #makeblastdb -in its_anas.fasta -input_type fasta -dbtype nucl -out its_anas.fasta
     try:
         cmd = ["makeblastdb", "-in", input_fasta, "-input_type","fasta","-dbtype","nucl","-out",blast_db]
         p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
@@ -214,7 +210,6 @@ def short_blast(input_fasta,output_dir,number_seq,primer_fasta,number_processors
             # Something else went wrong while trying to run "makeblastdb"
             raise
     try:
-        #blastn -task blastn-short -db its_anas.fasta -query primer  -out its_anas.fasta_primer -evalue 1e-1 -outfmt 6 -max_target_seqs 2500  -num_threads 1
         cmd = ["blastn","-task","blastn-short","-db",blast_db,"-query",primer_fasta,"-out",output_blast,"-evalue","10","-outfmt","6","-max_target_seqs",str(number_seq*5),"-num_threads",str(number_processors)]
         p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
         p.wait()
@@ -327,7 +322,7 @@ def run_mothur(oriented_fastq,oligos_path,primer_mismatch,barcode_mismatch):
             return
     return
 
-#This function re-orient the reads and runs the fastq.info of the mothur program to demultiplex the reads.
+#This function accomodates the orientation of the reads and runs the fastq.info of the mothur program to demultiplex the reads.
 def demultiplex_wraper(input_fastq,oligos_path,output_dir,number_processors,primer_mismatch,barcode_mismatch):
     list_primerF,list_primerR,barcode_info,primer_names,primer_fasta_path = parse_oligos(oligos_path,output_dir)
     input_fasta,number_seq = convert_fastq2fasta(input_fastq,output_dir)
@@ -368,28 +363,27 @@ def trim_adaptor(seq, adaptor, primer_mismatch, right_side=True):
     are not allowed.
     """
     gap_char = '-'
-    exact_pos = str(seq).find(adaptor)
+    seq_original = seq
+    seq = str(seq).upper()
+    adaptor = str(adaptor).upper()
+    exact_pos = seq.find(adaptor)
     if exact_pos >= 0:
         seq_region = str(seq[exact_pos:exact_pos + len(adaptor)])
         adapt_region = adaptor
     else:
-        aligns = pairwise2.align.localms(str(seq), str(adaptor),
-                                         5.0, -4.0, -9.0, -0.5, one_alignment_only=True,
-                                         gap_char=gap_char)
+        aligner_local = PairwiseAligner(mode = 'local', match_score = 5.0, mismatch_score = -4.0, open_gap_score = -9.0, extend_gap_score = -0.5)
+        aligns = aligner_local.align(seq, adaptor)
         if len(aligns) == 0:
             adapt_region, seq_region = ("", "")
         else:
-            seq_a, adaptor_a, score, start, end = aligns[0]
-            adapt_region = adaptor_a[start:end]
-            seq_region = seq_a[start:end]
+            seq_region, adapt_region = aligns[0]
     matches = match_func_amb(seq_region,adapt_region)
     # too many errors -- no trimming
     if (len(adaptor) - matches) > primer_mismatch:
-        return seq
+        return seq_original
     # remove the adaptor sequence and return the result
     else:
-        return _remove_adaptor(seq, seq_region.replace(gap_char, ""),
-                               right_side)
+        return _remove_adaptor(seq_original, seq_region.replace(gap_char, ""),right_side)
 
 #Belongs to trim_and_mask_seq_records.
 #Determine the number of matches taking into account ambiguous bases.
@@ -419,9 +413,8 @@ def trim_adaptor_w_qual(seq, qual, adaptor, primer_mismatch, right_side=True):
     assert len(tseq) == len(tqual)
     return tseq, tqual
 
-
 def gap_consensus(input_consensus, threshold=.7, mask_char="N", consensus_ambiguous_character="n",
-                  consensus_alpha=None, require_multiple=False, consensus_ignore_mask_char=False):
+                  require_multiple=False, consensus_ignore_mask_char=False):
     """Output a fast consensus sequence of the alignment, allowing gaps.
     Same as dumb_consensus(), but allows gap on the output.
     Things to do:
@@ -434,7 +427,7 @@ def gap_consensus(input_consensus, threshold=.7, mask_char="N", consensus_ambigu
     
     # parse aligned fasta
     with open(input_consensus, "r") as f:
-        alignment = AlignIO.read(f, "fasta", alphabet=IUPAC.ambiguous_dna)
+        alignment = AlignIO.read(f, "fasta")
 
     # take consensus of aligned fasta
     summary_align = AlignInfo.SummaryInfo(alignment)
@@ -479,14 +472,7 @@ def gap_consensus(input_consensus, threshold=.7, mask_char="N", consensus_ambigu
             consensus += max_atoms[0]
         else:
             consensus += consensus_ambiguous_character
-
-    # we need to guess a consensus alphabet if one isn't specified
-    if consensus_alpha is None:
-        # noinspection PyProtectedMember
-        consensus_alpha = summary_align._guess_consensus_alphabet(consensus_ambiguous_character)
-
-    return Seq(consensus, consensus_alpha)
-
+    return Seq(consensus)
 
 def create_unique_dir(path, limit=99):
     """Return a path to an empty directory. Either the dir at path, or a dir of the form 'path + _01'
@@ -567,11 +553,11 @@ def mask_seq_record(seq_rec, min_score, mask_char, inplace=False):
         if masked_seq_req.letter_annotations["phred_quality"][loc] < min_score:
             base_list[loc] = mask_char
 
-    masked_seq_req.seq = Seq("".join(base_list), alphabet=IUPAC.ambiguous_dna)
+    masked_seq_req.seq = Seq("".join(base_list))
 
     return masked_seq_req
 
-
+#Function to trim and mask bases based on phred quality
 def trim_and_mask_seq_records(records, primer_a, primer_b, primer_mismatch, min_base_score, basename, mask_char,
                               min_seq_score=None):
     for seq_rec in records:
@@ -603,30 +589,48 @@ def trim_and_mask_seq_records(records, primer_a, primer_b, primer_mismatch, min_
                 log.info("seq excluded - primers not found - {} {}".format(basename, seq_rec.id))
                 continue
 
-
+#Function to produce multiple sequence alignment
 def alignment_step(fasta_path,output_path,aligner,number_seqs,basename):
     
     if aligner == "muscle":
-        cline = MuscleCommandline(input=fasta_path,
-                                  out=output_path, fasta=True)
+        output_dir = os.path.dirname(output_path)
+        infile = fasta_path
+        outfile = output_path
         try:
-            # noinspection PyUnusedLocal
-            stdout, stderr = cline()
-            log.debug(stderr)
-        except Bio.Application.ApplicationError as _e:
-            log.info("alignment failed - {} - {}".format(_e, basename))
-            return
+            cmd = ["muscle", "-in", infile,"-out",outfile,"-quiet"]
+            p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL,stderr=subprocess.PIPE, cwd=output_dir)
+            p.wait()
+            (stdout, stderr) = p.communicate()
+        except calledProcessError as err:
+            log.info("alignment failed - {} - {}".format(err.stderr, basename))
+            return 
 
     elif aligner == "clustalw":
-        cline = ClustalwCommandline("clustalw2", infile=fasta_path,
-                                  outfile=output_path, output="FASTA")
+        output_dir = os.path.dirname(output_path)
+        infile = fasta_path
+        outfile_nexus = os.path.splitext(output_path)[0] + ".nex"
         try:
-            # noinspection PyUnusedLocal
-            stdout, stderr = cline()
-            log.debug(stderr)
-        except Bio.Application.ApplicationError as _e:
-            log.info("alignment failed - {} - {}".format(_e, basename))
-            return
+            cmd = ["clustalw2", "-INFILE=" + infile,"-TYPE=DNA","-OUTPUT=NEXUS","-OUTFILE=" + outfile_nexus]
+            p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL,stderr=subprocess.PIPE, cwd=output_dir)
+            p.wait()
+            (stdout, stderr) = p.communicate()
+        except calledProcessError as err:
+            log.info("alignment failed - {} - {}".format(err.stderr, basename))
+            return        
+        
+        #Convert nexus to fasta
+        outfile_fasta = os.path.splitext(outfile_nexus)[0] + ".fasta"
+        with open(outfile_nexus, "r") as input_handle:
+            with open(outfile_fasta, "w") as output_handle:
+                sequences = SeqIO.parse(input_handle, "nexus")
+                count = SeqIO.write(sequences, output_handle, "fasta")
+
+        file = os.path.splitext(infile)[0] + ".dnd"
+        try:
+            os.remove(file)
+            os.remove(outfile_nexus)
+        except:
+            log.info("Error while deleting clustal tree file in alignment_step function: {}".format(file))
 
     elif aligner == "mafft":
         output_dir = os.path.dirname(output_path)
@@ -892,7 +896,6 @@ def use_set_ambiguous_char(sequence,consensus_ambiguous_char):
     clean_seq = new_seq.replace("N",consensus_ambiguous_char)
     return clean_seq
 
-
 #Process fastq to get the consensus
 def process_fastq(input_fn, primer_a, primer_b, output_dir, primer_mismatch, min_base_score, min_seq_score, min_seq_cov,
                   max_len, aligner, sequence_max_mask, alignment_max_amb, max_len_delta,
@@ -905,9 +908,9 @@ def process_fastq(input_fn, primer_a, primer_b, output_dir, primer_mismatch, min
     
     # parse fastq file
     if max_len is None:
-        records = (r for r in SeqIO.parse(input_fn, "fastq", alphabet=IUPAC.ambiguous_dna))
+        records = (r for r in SeqIO.parse(input_fn, "fastq"))
     else:
-        records = (r for r in SeqIO.parse(input_fn, "fastq", alphabet=IUPAC.ambiguous_dna) if len(r) < max_len)
+        records = (r for r in SeqIO.parse(input_fn, "fastq") if len(r) < max_len)
 
     clean_records = list(trim_and_mask_seq_records(records, primer_a, primer_b, primer_mismatch,
                                                    min_base_score, basename, mask_char, min_seq_score))
@@ -1049,8 +1052,7 @@ def process_fastq(input_fn, primer_a, primer_b, output_dir, primer_mismatch, min
                 input_consensus = output_path
                 # write consensus fasta
                 consensus = gap_consensus(input_consensus, threshold=consensus_threshold, mask_char=mask_char,
-                              consensus_ambiguous_character="n", consensus_alpha=IUPAC.ambiguous_dna,
-                              require_multiple=consensus_require_multiple,
+                              consensus_ambiguous_character="n",require_multiple=consensus_require_multiple,
                               consensus_ignore_mask_char=consensus_ignore_mask_char)
                 amb_count = consensus.upper().count("N")
     
@@ -1063,7 +1065,7 @@ def process_fastq(input_fn, primer_a, primer_b, output_dir, primer_mismatch, min
                 consensus_seq = use_set_ambiguous_char(str(consensus),consensus_ambiguous_char)
                 consensus_without_gaps = remove_gaps(consensus_seq)
 
-                seq = Seq(data=consensus_without_gaps, alphabet=IUPAC.ambiguous_dna)
+                seq = Seq(data=consensus_without_gaps)
                 description = "seq_count:{} amb_count:{} seq:len:{}".format(number_seqs, amb_count, len(consensus_without_gaps))
                 # noinspection PyTypeChecker
                 #Get the new name of the haplotype
