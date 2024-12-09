@@ -14,15 +14,24 @@ CCS-consensuser is a pipeline written in Python 3 that aims to generate consensu
 
 REQUIREMENTS AND INSTALLATION:
 -----
-We developed and tested this script using Python version 3. It requires numpy and Biopython v.1.72 modules. The following programs should be previously installed: 
+We developed and tested this script using Python version 3.
+
+Python modules:
+
+* numpy
+* biopython v.1.83
+
+Programs with specific versions:
 
 * mothur v.1.46.1 (https://mothur.org)
-* blast v.2.5 (https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.5.0/)
-* mafft v.7.475 (https://mafft.cbrc.jp/alignment/software/)
-* muscle v.3.8.1551 (http://www.drive5.com/muscle/)
+* blast v.2.16 (https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.16.0/)
+* mafft v.7.490 (https://mafft.cbrc.jp/alignment/software/)
+* muscle v.3.8.31 (http://www.drive5.com/muscle/)
 * clustalw v.2.1 (http://www.clustal.org/clustal2/)
 
-We strongly recommend to use conda (https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) to install the dependecies of this program. Once conda is installed in the system, run the following commands to install CCS-consensuser:
+Installation methods:
+---
+1. This method requires conda (https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) installed in system. The program was tested using conda 24.11.0. Once conda is properly installed, run the following commands to install CCS-consensuser:
 
 ```sh
 git clone https://github.com/popphylotools/ccs-consensuser_v2.git
@@ -32,6 +41,25 @@ conda env create -f environment_LinuxOS.yml
 #macOS. mothur v.1.46.1 is not available in conda for macOS. mothur 1.44.11 will be installed instead.
 conda env create -f environment_macOS.yml
 ```
+2. This method requires docker (https://docs.docker.com/engine/install/) installed in the system.
+
+```sh
+#Download the container
+docker pull carloscongrains/ccs-consensuser
+#Run the container
+docker run --rm -v`pwd`:`pwd` carloscongrains/ccs-consensuser ccs-consensuser_v2.1.py
+```
+
+3. This method requeres singularity or apptainer (https://apptainer.org/admin-docs/master/installation.html) installed in the system.
+
+```sh
+#Download the container and create the sif file.
+singularity pull docker://carloscongrains/ccs-consensuser:latest
+#Run the container. Use the path of the sif file created to the previous step to run the program:
+singularity exec  ccs-consensuser_latest.sif ccs-consensuser_v2.1.py
+```
+
+4. The users may opt to install the requirements manually. This method may be time consuming.
 
 USAGE:
 -----
@@ -68,12 +96,12 @@ MODE CONSENSUS:
 
 This mode aims to obtain a consensus from reads in fastq format from a demultiplexed sample. A general command line is shown below:
 
-python ccs-consensuser_v2.py --mode consensus -l mafft -F sequence_primerF -R sequence_primerR --out_dir path_to_output_directory  -i path_to_hifi_reads.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
+python ccs-consensuser_v2.py --mode consensus -l mafft -F sequence_primerF -R sequence_primerR --out_dir path_to_output_directory  -i path_to_hifi_reads.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
 
 To test this mode, run the following command line in the place you downloaded this program:
 
 ```sh
-python ccs-consensuser_v2.py --mode consensus -l mafft -F GCAGTCGAACATGTAGCTGACTCAGGTCACGGGATGGATGTATGTCTGCTG -R TGGATCACTTGTGCAAGCATCACATCGTAGCAAATACCAAAACCCCATAGCCAT --out_dir mode_consensus_output -i  test_data/mode_consensus/B_tau_Laos_330.PB_o5188_853-1541.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_consensus_output.log
+python ccs-consensuser_v2.py --mode consensus -l mafft -F GCAGTCGAACATGTAGCTGACTCAGGTCACGGGATGGATGTATGTCTGCTG -R TGGATCACTTGTGCAAGCATCACATCGTAGCAAATACCAAAACCCCATAGCCAT --out_dir mode_consensus_output -i  test_data/mode_consensus/B_tau_Laos_330.PB_o5188_853-1541.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_consensus_output.log
 ```
 
 The output consists of a set of fasta files and a zip file (--clean_up zip). For instance, the script will generate the following files after running the command line indicated above:
@@ -105,12 +133,12 @@ primer  GCAGTCGAACATGTAGCTGACTCAGGTCACACACGCCATTTTACTATTAAAACGG TGGATCACTTGTGCAA
 
 A general command line is shown below:
 
-python ccs-consensuser_v2.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list path_to_input_list -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
+python ccs-consensuser_v2.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list path_to_input_list -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
 
 To test this mode, run the following command line in the place you downloaded this program:
 
 ```sh
-python ccs-consensuser_v2.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list test_data/mode_consensus_batch/consensus_batch_input -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> consensus_batch_output.log
+python ccs-consensuser_v2.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list test_data/mode_consensus_batch/consensus_batch_input -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> consensus_batch_output.log
 ```
 
 The output of each sample will be stored in the directory provided in the fifth field of the input_list file. For more information about the output see MODE CONSENSUS output above.
@@ -124,10 +152,12 @@ python ccs-consensuser_v2.py --number_processors 10 --mode all -l mafft -i path_
 To test this mode, run the following command line in the place you downloaded this program:
 
 ```sh
-python ccs-consensuser_v2.py --number_processors 10 --mode all -l mafft -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_all_output -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_threshold 0.7 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_all_output.log
+python ccs-consensuser_v2.py --number_processors 10 --mode all -l mafft -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_all_output -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_all_output.log
 ```
 
-This mode will make a directory for each locus containing one directory per sample. For more information about the output see MODE CONSENSUS output above. In adition, the program generates a file with all consensus sequences per marker to facilitate further analysis. This file is located at final_consensus_sequences/consensus_sequences.fasta.
+This mode will make a directory for each locus containing one directory per sample. For more information about the output see MODE CONSENSUS output above. In adition, the program generates a fasta file with all consensus sequences per marker to facilitate further analysis. The fasta file of the respective marker is located in subfolders of final_consensus_sequences. The sequences are named based on the information provided in the oligos file and an index (haplotype code).
+
+Addionally, the program generates a summary file refered to as “summary_results”. This file includes the following fields: Marker identifier, sample identifier, number of demultiplexed reads, number of haplotypes, haplotype identifier, haplotype coverage, number of missing nucleotides (Ns), and haplotype length.
 
 OPTIONS:
 -----
