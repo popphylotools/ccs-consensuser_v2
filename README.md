@@ -31,7 +31,7 @@ Programs with the corresponding versions:
 
 Installation methods:
 ---
-1. This method requires conda (https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) installed in system. The program was tested using conda 24.11.0. Once conda is properly installed, run the following commands to install CCS-consensuser:
+1. This method requires conda (https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) installed in system. The program was tested using conda 24.11.0. Once conda is properly installed, run the following commands to install dependencies of CCS-consensuser:
 
 ```sh
 #Download the program folder
@@ -57,10 +57,10 @@ docker run --rm -v`pwd`:`pwd` carloscongrains/ccs-consensuser ccs-consensuser_v2
 #Download the container and create the sif file.
 singularity pull docker://carloscongrains/ccs-consensuser:2.1
 #Run the container. Use the path of the sif file created on the previous step to run the program:
-singularity exec ccs-consensuser_latest.sif ccs-consensuser_v2.1.py
+singularity exec ccs-consensuser_2.1.sif ccs-consensuser_v2.1.py
 ```
 
-4. The users may opt to install the requirements manually. This method may be time consuming.
+4. The users may opt to install the dependencies manually. It is important to install the specified version of the dependencies. This method may be time consuming.
 
 USAGE:
 -----
