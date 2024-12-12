@@ -55,7 +55,7 @@ docker run --rm -v`pwd`:`pwd` carloscongrains/ccs-consensuser ccs-consensuser_v2
 
 ```sh
 #Download the container and create the sif file.
-singularity pull docker://carloscongrains/ccs-consensuser:latest
+singularity pull docker://carloscongrains/ccs-consensuser:2.1
 #Run the container. Use the path of the sif file created on the previous step to run the program:
 singularity exec ccs-consensuser_latest.sif ccs-consensuser_v2.1.py
 ```
