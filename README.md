@@ -158,7 +158,9 @@ To test this mode, run the following command line in the place you downloaded th
 python ccs-consensuser_v2.1.py --number_processors 10 --mode all -l mafft -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_all_output -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_all_output.log
 ```
 
-This mode will make a directory for each locus containing one directory per sample. For more information about the output see MODE CONSENSUS output above. In adition, the program generates a fasta file with all consensus sequences per marker to facilitate further analysis. The fasta file of the respective marker is located in subfolders of final_consensus_sequences. The sequences are named based on the information provided in the oligos file and an index (haplotype code).
+This mode will make a directory for each locus containing one directory per sample. For more information about the output see MODE CONSENSUS output above.
+
+To facilitates subsequent analysis, the program generates a fasta file with all consensus sequences per marker. The fasta file of the respective marker is located in subfolders of final_consensus_sequences. The sequences are named based on the information provided in the oligos file and an index (haplotype code). After running the testing command, the program generates two files including the consensus sequences: final_consensus_sequences/PB_o5503_129-904/PB_o5503_129-904.fasta and final_consensus_sequences/PB_o8713_158-707/PB_o8713_158-707.fasta.
 
 Addionally, the program generates a summary file refered to as “summary_results”. This file includes the following fields: Marker identifier, sample identifier, number of demultiplexed reads, number of haplotypes, haplotype identifier, haplotype coverage, number of missing nucleotides (Ns), and haplotype length. The summary_results file can be imported in a spreadsheet program such as Microsoft Excel.
 
