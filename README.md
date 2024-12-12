@@ -14,7 +14,7 @@ CCS-consensuser is a pipeline written in Python 3 that aims to generate consensu
 
 REQUIREMENTS AND INSTALLATION:
 -----
-We developed and tested this script using Python version 3.
+We developed and tested this script using Python version 3. The following dependencies are also required:
 
 Python modules:
 
@@ -51,7 +51,7 @@ docker pull carloscongrains/ccs-consensuser
 docker run --rm -v`pwd`:`pwd` carloscongrains/ccs-consensuser ccs-consensuser_v2.1.py
 ```
 
-3. This method requeres singularity or apptainer (https://apptainer.org/admin-docs/master/installation.html) installed in the system.
+3. This method requires singularity or apptainer (https://apptainer.org/admin-docs/master/installation.html) installed in the system.
 
 ```sh
 #Download the container and create the sif file.
@@ -60,7 +60,7 @@ singularity pull docker://carloscongrains/ccs-consensuser:2.1
 singularity exec ccs-consensuser_2.1.sif ccs-consensuser_v2.1.py
 ```
 
-4. The users may opt to install the dependencies manually. It is important to install the specified version of the dependencies. This method may be time consuming.
+4. The users may opt to install the dependencies manually. It is important to install the specified versions of the dependencies. This method may be time consuming.
 
 USAGE:
 -----
