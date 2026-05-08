@@ -8,6 +8,8 @@
 
 CCS-consensuser is a pipeline written in Python 3 that aims to generate consensus of unique sequences (haplotypes) from long-read amplicon sequences obtained by PacBio circular consensus sequencing (CCS). This tool is implemented in two main steps, demultiplexing and consensus.
 
+THe current version is 2.2. This version includes the option --max_depth_sample, which define a maximum number of reads per sample to be processed. Using this option avoids system overloading and excessive runtime. The default is 100000.
+
 <p align="center">
 <img src="https://github.com/popphylotools/ccs-consensuser_v2/blob/main/ccs-consensuser_v2_workflow.jpg" width="700" />
 </p>
@@ -48,16 +50,16 @@ conda env create -f environment_macOS.yml
 #Download the container
 docker pull carloscongrains/ccs-consensuser
 #Run the container
-docker run --rm -v`pwd`:`pwd` carloscongrains/ccs-consensuser ccs-consensuser_v2.1.py
+docker run --rm -v`pwd`:`pwd` carloscongrains/ccs-consensuser ccs-consensuser_v2.2.py
 ```
 
 3. This method requires singularity or apptainer (https://apptainer.org/admin-docs/master/installation.html) installed in the system.
 
 ```sh
 #Download the container and create the sif file.
-singularity pull docker://carloscongrains/ccs-consensuser:2.1
+singularity pull docker://carloscongrains/ccs-consensuser:2.2
 #Run the container. Use the path of the sif file created on the previous step to run the program:
-singularity exec ccs-consensuser_2.1.sif ccs-consensuser_v2.1.py
+singularity exec ccs-consensuser_2.2.sif ccs-consensuser_v2.2.py
 ```
 
 4. The users may opt to install the dependencies manually. It is important to install the specified versions of the dependencies. This method may be time consuming.
@@ -76,12 +78,12 @@ MODE DEMULTIPLEX:
 
 This mode implements the reorientation of the reads and demultiplexing. A general command line is shown below:
 
-python ccs-consensuser_v2.1.py --number_processors 10 --mode demultiplex -oligos path_to_oligos_file -i path_to_hifi_reads.fastq -o path_to_output_directory
+python ccs-consensuser_v2.2.py --number_processors 10 --mode demultiplex -oligos path_to_oligos_file -i path_to_hifi_reads.fastq -o path_to_output_directory
 
 To test this mode, run the following command line in the location you downloaded the program and extracted the test_data.tar.gz:
 
 ```sh
-python ccs-consensuser_v2.1.py --number_processors 10 --mode demultiplex -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_demultiplex_output 2> mode_demultiplex_output.log
+python ccs-consensuser_v2.2.py --number_processors 10 --mode demultiplex -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_demultiplex_output 2> mode_demultiplex_output.log
 ```
 
 The output consists in a set of fastq files with demultiplexed reads. The name files will have the following structure:
@@ -99,12 +101,12 @@ MODE CONSENSUS:
 
 This mode aims to obtain a consensus from reads in fastq format from a demultiplexed sample. A general command line is shown below:
 
-python ccs-consensuser_v2.1.py --mode consensus -l mafft -F sequence_primerF -R sequence_primerR --out_dir path_to_output_directory  -i path_to_hifi_reads.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
+python ccs-consensuser_v2.2.py --mode consensus -l mafft -F sequence_primerF -R sequence_primerR --out_dir path_to_output_directory  -i path_to_hifi_reads.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
 
 To test this mode, run the following command line in the place you downloaded this program:
 
 ```sh
-python ccs-consensuser_v2.1.py --mode consensus -l mafft -F GCAGTCGAACATGTAGCTGACTCAGGTCACGGGATGGATGTATGTCTGCTG -R TGGATCACTTGTGCAAGCATCACATCGTAGCAAATACCAAAACCCCATAGCCAT --out_dir mode_consensus_output -i  test_data/mode_consensus/B_tau_Laos_330.PB_o5188_853-1541.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_consensus_output.log
+python ccs-consensuser_v2.2.py --mode consensus -l mafft -F GCAGTCGAACATGTAGCTGACTCAGGTCACGGGATGGATGTATGTCTGCTG -R TGGATCACTTGTGCAAGCATCACATCGTAGCAAATACCAAAACCCCATAGCCAT --out_dir mode_consensus_output -i  test_data/mode_consensus/B_tau_Laos_330.PB_o5188_853-1541.fastq -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_consensus_output.log
 ```
 
 The output consists of a set of fasta files and a zip file (--clean_up zip). For instance, the script will generate the following files after running the command line indicated above:
@@ -136,12 +138,12 @@ primer  GCAGTCGAACATGTAGCTGACTCAGGTCACACACGCCATTTTACTATTAAAACGG TGGATCACTTGTGCAA
 
 A general command line is shown below:
 
-python ccs-consensuser_v2.1.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list path_to_input_list -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
+python ccs-consensuser_v2.2.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list path_to_input_list -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
 
 To test this mode, run the following command line in the place you downloaded this program:
 
 ```sh
-python ccs-consensuser_v2.1.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list test_data/mode_consensus_batch/consensus_batch_input -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> consensus_batch_output.log
+python ccs-consensuser_v2.2.py --number_processors 10 --mode consensus_batch --clean_up zip --in_file_list test_data/mode_consensus_batch/consensus_batch_input -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> consensus_batch_output.log
 ```
 
 The output of each sample will be stored in the directory provided in the fifth field of the input_list file. For more information about the output see MODE CONSENSUS output above.
@@ -150,12 +152,12 @@ MODE ALL:
 -----
 This mode runs the complete pipeline, which is reorientation of the reads, demultiplexing and obtain the consensus of each sample. A general command line is shown below:
 
-python ccs-consensuser_v2.1.py --number_processors 10 --mode all -l mafft -i path_to_hifi_reads.fastq -oligos path_to_oligos_file -o path_to_output_directory -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
+python ccs-consensuser_v2.2.py --number_processors 10 --mode all -l mafft -i path_to_hifi_reads.fastq -oligos path_to_oligos_file -o path_to_output_directory -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> path_to_output_log
 
 To test this mode, run the following command line in the place you downloaded this program:
 
 ```sh
-python ccs-consensuser_v2.1.py --number_processors 10 --mode all -l mafft -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_all_output -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_all_output.log
+python ccs-consensuser_v2.2.py --number_processors 10 --mode all -l mafft -i test_data/fastq_oligos/nuclear_loci.fastq -oligos test_data/fastq_oligos/oligos_nuclear -o mode_all_output -pm 2 -bm 2 --min_base_score 30 --min_seq_score 20 --sequence_max_mask 10 --min_seq_cov 2 --min_SNP_cov 0 --max_len_delta 5 --alignment_max_amb 0 --consensus_ignore_mask_char --min_prop_reads 0.2 --mask_char N --indel M 2> mode_all_output.log
 ```
 
 This mode will make a directory for each locus containing one directory per sample. For more information about the output see MODE CONSENSUS output above.
